@@ -6,7 +6,7 @@ const shouldAnalyseBundle = process.env.ANALYSE_BUNDLE
 
 module.exports = {
   siteMetadata: {
-    siteTitleAlt: `Minimal Blog - Gatsby Theme`,
+    siteTitleAlt: `Cynical Penguin Cafe`,
   },
   plugins: [
     {
@@ -25,12 +25,12 @@ module.exports = {
         ],
         externalLinks: [
           {
-            name: `Twitter`,
-            url: `https://twitter.com/lekoarts_de`,
+            name: `Fediverse`,
+            url: `https://curenoize.org`,
           },
           {
-            name: `Instagram`,
-            url: `https://www.instagram.com/lekoarts.de/`,
+            name: `Diary`,
+            url: `https://write.curenoize.org`,
           },
         ],
       },
@@ -38,7 +38,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
-        trackingId: process.env.GOOGLE_ANALYTICS_ID,
+        trackingId: process.env.UA-118481384-1,
       },
     },
     `gatsby-plugin-sitemap`,
