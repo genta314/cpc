@@ -8,6 +8,11 @@ module.exports = {
   siteMetadata: {
     siteTitle: `Cynical Penguin Cafe`,
     siteTitleAlt: `Cynical Penguin Cafe - Turning the pages of life`,
+    siteHeadline: `CPC - Page by Page`,
+    siteUrl: `https://lowmuzic.com`,
+    siteDescription: `Turning the pages of life`,
+    siteLanguage: `en`,
+    siteImage: `/banner.jpg`,
     author: `unrest`,
   },
   plugins: [
