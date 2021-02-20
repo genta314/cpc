@@ -8,7 +8,7 @@ module.exports = {
   siteMetadata: {
     siteTitle: `Cynical Penguin Cafe`,
     siteTitleAlt: `Cynical Penguin Cafe - Turning the pages of life`,
-    siteHeadline: `CPC - Page by Page`,
+    siteHeadline: `Cynical Penguin Cafe - Page by Page`,
     siteUrl: `https://lowmuzic.com`,
     siteDescription: `Turning the pages of life`,
     siteLanguage: `en`,
@@ -39,15 +39,6 @@ module.exports = {
             name: `Diary`,
             url: `https://write.curenoize.org`,
           },
-        ],
-      },
-    },
-    {
-      resolve: `gatsby-plugin-google-gtag`,
-      options: {
-        // You can add multiple tracking ids and a pageview event will be fired for all of them.
-        trackingIds: [
-          "G-JKE8GKBY4K", // Google Analytics / GA
         ],
       },
     },
