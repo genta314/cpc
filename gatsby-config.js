@@ -67,6 +67,7 @@ module.exports = {
         ],
       },
     },
+    `gatsby-plugin-feed`,
     `gatsby-plugin-offline`,
     `gatsby-plugin-netlify`,
     shouldAnalyseBundle && {
