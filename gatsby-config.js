@@ -1,6 +1,7 @@
 require(`dotenv`).config({
   path: `.env`,
 })
+const oembed = require(`remark-oembed`)
 
 const shouldAnalyseBundle = process.env.ANALYSE_BUNDLE
 
@@ -46,7 +47,7 @@ module.exports = {
     resolve: `gatsby-plugin-mdx`,
     options: {
       extensions: [`.md`, `.mdx`],
-      remarkPlugins: [remark-oembed],
+      remarkPlugins: [oembed],
     },
     },
     `gatsby-plugin-sitemap`,
