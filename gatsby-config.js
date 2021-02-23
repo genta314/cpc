@@ -42,12 +42,6 @@ module.exports = {
         ],
       },
     },
-    {
-    resolve: `gatsby-plugin-mdx`,
-    options: {
-      extensions: [`.md`, `.mdx`],
-    },
-    },
     `gatsby-plugin-sitemap`,
     {
       resolve: `gatsby-plugin-manifest`,
