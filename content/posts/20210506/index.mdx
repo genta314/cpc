@@ -1,0 +1,134 @@
+---
+title: Misskey install note - 01
+date: 2021-05-06
+tags:
+ - Web
+---
+という訳でですね、思い付きでやってしまったのだけれどPleromaからMisskeyに鞍替えしましたね。Dockerだけで運用をしたかったのだけれど、なんか上手く行かないなぁってやっていて、なにが引っかかっていたのかっていうのはnginx-proxy + letsencrypt-nginx-proxy-companionの使い方が今イチ上手くないってのがあったのだけれど、この度目出度く通信出来るようになったのでメモっておくなかって感じですね。
+
+nginx-proxy + letsencrypt-nginx-proxy-companionって使い方が簡単そうに見えてなんか上手く行かないっていうか、Webで見かける情報が結構複雑だったりなんだったりで見様見真似でdocker-compose.ymlとか弄っても上手くないなぁってなっていたよね。まぁ、アプリケーションのportをlistenすればいいだけじゃんって話なのだけれど何故ここまで迷走したのかは分からないね。
+
+で、PleromaからMisskeyに鞍替えしたのは、Misskeyには公式にDocker imageがあったのと、なんかMisskey面白いかなと思ったので使ってみようかなという、そんなに大した理由ではないですね。
+
+前提としてdockerとdocker-composeはインストールしておきます。インストールするのはこれだけですね。ディレクトリは、nginx-proxy + letsencrypt-nginx-proxy-companion用を作成して同階層にmisskeyをgit cloneする。nginx-proxy + letsencrypt-nginx-proxy-companion用のディレクトリは簡単にletsencryptとする。
+
+インストールの話なのだけれど、Misskey自体は[Dockerを使ったMisskey構築方法](https://gitea.foggy.llc/foggy.llc/misskey/src/commit/2820f6a6211f8654b437a18936de6239d9038bf9/docs/docker.ja.md)を読めば全部OKです。default.ymlでpostgresqlとかredisのホスト名をlocalhostからdocker-compose.ymlで設定したサービス名に直すのを忘れなければ失敗はないかと思います。ここでMisskeyはport 3000をlistenするように設定します。他の設定にも関わるので帰る場合は、全部忘れずに変えましょう。
+
+docker-compose.ymlは下記のようになります。
+
+letsencrypt/docker-compose.yml
+```
+version: '3'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    restart: always
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+    - html:/usr/share/nginx/html
+    - dhparam:/etc/nginx/dhparam
+    - vhost:/etc/nginx/vhost.d
+    - certs:/etc/nginx/certs:ro
+    - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+    - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    networks:
+    - shared
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-proxy-lets-encrypt
+    restart: always
+    depends_on:
+    - "nginx-proxy"
+    volumes:
+    - certs:/etc/nginx/certs:rw
+    - vhost:/etc/nginx/vhost.d
+    - html:/usr/share/nginx/html
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+    - shared
+
+volumes:
+  certs:
+  html:
+  vhost:
+  dhparam:
+
+networks:
+  shared:
+    external: true
+```
+
+misskey/docker-compose.yml
+```
+version: "3"
+
+services:
+  web:
+    build: .
+    restart: always
+    links:
+      - db
+      - redis
+      - es
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - internal_network
+      - external_network
+    volumes:
+      - ./files:/misskey/files
+    environment:
+      - VIRTUAL_HOST=curenoize.org
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=curenoize.org
+      - LETSENCRYPT_EMAIL=quantize.noize.music@gmail.com
+
+  redis:
+    restart: always
+    image: redis:4.0-alpine
+    networks:
+      - internal_network
+    volumes:
+      - ./redis:/data
+
+  db:
+    restart: always
+    image: postgres:12.2-alpine
+    networks:
+      - internal_network
+    env_file:
+      - .config/docker.env
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
+  es:
+    restart: always
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.4.2
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    networks:
+      - internal_network
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+
+networks:
+  internal_network:
+    internal: true
+  external_network:
+    external:
+      name: shared
+```
+
+elasticsearchを使わない場合は、esの部分をコメントアウトする。
+
+dockerを使う前にネットワークを作成する。
+` sudo docker network create --driver bridge shared `
+
+ここまでやったら、misskeyのビルドとかやって ` docker-compose up -d ` で完成。
+
+長くなったので設定は次回です。
