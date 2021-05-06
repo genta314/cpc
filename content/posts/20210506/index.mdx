@@ -83,10 +83,10 @@ services:
     volumes:
       - ./files:/misskey/files
     environment:
-      - VIRTUAL_HOST=curenoize.org
+      - VIRTUAL_HOST=example.tld
       - VIRTUAL_PORT=3000
-      - LETSENCRYPT_HOST=curenoize.org
-      - LETSENCRYPT_EMAIL=quantize.noize.music@gmail.com
+      - LETSENCRYPT_HOST=example.tld
+      - LETSENCRYPT_EMAIL=mail@example.tld
 
   redis:
     restart: always
