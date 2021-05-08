@@ -7,7 +7,9 @@ tags:
 前回、これで完成とか書いてしまったけれど、nginxでproxy通した方が良いよねって思い直したので修正版を書いておきます。
 
 misskeyのビルドとかする前にvolumeとnetoworkを作成する。
+
 ` sudo docker volume create certs `
+
 ` sudo docker network create --driver bridge shared `
 
 misskey/docker-compose.yml
