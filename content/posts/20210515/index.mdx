@@ -1,0 +1,75 @@
+---
+title: Misskey install note - 02
+date: 2021-05-15
+tags:
+ - Web
+---
+間が空いたけれど、[前回](https://lowmuzic.com/misskey-install-note-01-rev-1)の続きです。
+
+大体は、[このドキュメント](https://misskey-site.com/posts/aws%e7%89%88misskey%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab%e6%96%b9%e6%b3%95%e8%a9%b3%e8%aa%ac)を読めば分かるのだけれど、今回のサーバーの構成が違うので変更が必要になります。
+
+前提として、今回のサーバー構成は、サーバーにamazon lightsail, オブジェクトストレージ amazon s3, CDN amazon cloudfront, メールサーバー mailgunという構成です。
+
+### amazon lightsailのvpcを有効にする
+[このドキュメント](https://lightsail.aws.amazon.com/ls/docs/ja_jp/articles/lightsail-how-to-set-up-vpc-peering-with-aws-resources)を参照してlightsailのvpcを有効にする。サーバー毎に設定ではなくアカウントで有効になる。VPC No.をメモっておく。
+
+### VPCをIPv6に対応させる
+[このドキュメント](https://misskey-site.com/posts/aws%e7%89%88misskey%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab%e6%96%b9%e6%b3%95%e8%a9%b3%e8%aa%ac)のVPCをIPv6に対応させるの項を参照して設定を行うが、やるのはVPCにIPv6 CIDR の追加のみ。
+
+### S3オブジェクトストレージ
+[このドキュメント](https://misskey-site.com/posts/aws%e7%89%88misskey%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab%e6%96%b9%e6%b3%95%e8%a9%b3%e8%aa%ac)のS3バケットの準備の項目をそのまま全部やる。
+
+IAMでユーザーの作成し、ポリシーにAmazonS3FullAccessアタッチする。
+Access KeyとSecret Keyはメモっておく。
+
+Backetを作成する。Bucket名：example.tld リージョン：アジアパシフィック（東京）これ以外はデフォルトのままで作成する。
+Bucketのアクセスポイントを作成する。lightsailのVPC IDを使用する。
+
+### cloudfront
+[cloudfront](https://console.aws.amazon.com/cloudfront/home)でDistributionを作成する。
+| Origin Domain Name | example.tld.s3.amazonaws.com |
+| Restrict Bucket Access | Yes |
+| Origin Access Identity | Create a New Identity |
+| Grant Read Permissions on Bucket | Yes, Update Bucket Policy |
+| Viewer Protocol Policy | Redirect HTTP to HTTPS |
+
+cacheの設定は、デフォルトのままにする。
+
+domain nameがxxxxxxxxxxxxx.cloudfront.netのように設定されているのでメモっておく。
+
+### Misskey側の設定
+* メールサーバー
+メール配信機能を有効にする
+メールアドレス : example.mail@example.tld
+ホスト : smtp.mailgun.org
+ポート : 2525
+ユーザー名 : mailgunのドメインメニューで設定したユーザー
+パスワード : mailgunのドメインメニューで設定したパスワード
+SMTP接続に暗黙的なSSL/TLSを使用するはオフにする
+
+* オブジェクトストレージ
+Base URL : ` https://xxxxxxxxxxxxx.cloudfront.net `
+Bucket : ` example.tld `
+Prefix : m (好みで適当に設定する)
+Endpoint : ` s3.ap-northeast-1.amazonaws.com `
+Region : ` ap-northeast-1 `
+Access key : ユーザー作成時にメモしたキー
+Secret key : ユーザー作成時にメモしたキー
+
+残りの設定はデフォルトのままにする。
+
+* セキュリティ
+reCAPTCHAを有効にして、[google](https://www.google.com/recaptcha/about/)のadmin consoleで登録する。サイトキーとシークレットキーを入力する。
+V3で登録するとエラー(おま環?)が出るのでV2で登録する。
+
+* ServiceWorker
+有効にする場合は
+
+` sudo docker exec misskey_web_1 npm install web-push -g `
+
+` sudo docker exec misskey_web_1 web-push generate-vapid-keys `
+
+出力されたPublic keyとPrivate keyを入力する。
+
+基本的な設定は以上で終わり。
+
