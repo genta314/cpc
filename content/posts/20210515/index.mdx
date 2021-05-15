@@ -19,10 +19,10 @@ tags:
 ### S3オブジェクトストレージ
 [このドキュメント](https://misskey-site.com/posts/aws%e7%89%88misskey%e3%82%a4%e3%83%b3%e3%82%b9%e3%83%88%e3%83%bc%e3%83%ab%e6%96%b9%e6%b3%95%e8%a9%b3%e8%aa%ac)のS3バケットの準備の項目をそのまま全部やる。
 
-IAMでユーザーの作成し、ポリシーにAmazonS3FullAccessアタッチする。
+IAMでユーザーの作成し、ポリシーにAmazonS3FullAccessアタッチする。  
 Access KeyとSecret Keyはメモっておく。
 
-Backetを作成する。Bucket名：example.tld リージョン：アジアパシフィック（東京）これ以外はデフォルトのままで作成する。
+Backetを作成する。Bucket名：example.tld リージョン：アジアパシフィック（東京）これ以外はデフォルトのままで作成する。  
 Bucketのアクセスポイントを作成する。lightsailのVPC IDを使用する。
 
 ### cloudfront
@@ -42,28 +42,28 @@ domain nameがxxxxxxxxxxxxx.cloudfront.netのように設定されているの�
 
 ### Misskey側の設定
 * メールサーバー
- - メール配信機能を有効にする
- - メールアドレス : example.mail@example.tld
- - ホスト : smtp.mailgun.org
- - ポート : 2525
- - ユーザー名 : mailgunのドメインメニューで設定したユーザー
- - パスワード : mailgunのドメインメニューで設定したパスワード
- - SMTP接続に暗黙的なSSL/TLSを使用するはオフにする
+	- メール配信機能を有効にする
+	- メールアドレス : example.mail@example.tld
+	- ホスト : smtp.mailgun.org
+	- ポート : 2525
+	- ユーザー名 : mailgunのドメインメニューで設定したユーザー
+	- パスワード : mailgunのドメインメニューで設定したパスワード
+	- SMTP接続に暗黙的なSSL/TLSを使用するはオフにする
 
 * オブジェクトストレージ
- - Base URL : ` https://xxxxxxxxxxxxx.cloudfront.net `
- - Bucket : ` example.tld `
- - Prefix : m (好みで適当に設定する)
- - Endpoint : ` s3.ap-northeast-1.amazonaws.com `
- - Region : ` ap-northeast-1 `
- - Access key : ユーザー作成時にメモしたキー
- - Secret key : ユーザー作成時にメモしたキー
+	- Base URL : ` https://xxxxxxxxxxxxx.cloudfront.net `
+	- Bucket : ` example.tld `
+	- Prefix : m (好みで適当に設定する)
+	- Endpoint : ` s3.ap-northeast-1.amazonaws.com `
+	- Region : ` ap-northeast-1 `
+	- Access key : ユーザー作成時にメモしたキー
+	- Secret key : ユーザー作成時にメモしたキー
 
 残りの設定はデフォルトのままにする。
 
 * セキュリティ
 
-reCAPTCHAを有効にして、[google](https://www.google.com/recaptcha/about/)のadmin consoleで登録する。サイトキーとシークレットキーを入力する。
+reCAPTCHAを有効にして、[google](https://www.google.com/recaptcha/about/)のadmin consoleで登録する。サイトキーとシークレットキーを入力する。  
 V3で登録するとエラー(おま環?)が出るのでV2で登録する。
 
 * ServiceWorker
