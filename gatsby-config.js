@@ -33,11 +33,11 @@ module.exports = {
         externalLinks: [
           {
             name: `Fediverse`,
-            url: `https://curenoize.org`,
+            url: `https://noize.guru`,
           },
           {
             name: `Diary`,
-            url: `https://write.curenoize.org`,
+            url: `https://curenoize.org`,
           },
         ],
       },
